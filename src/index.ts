@@ -94,6 +94,78 @@ import { UpdateSalesReceiptTool } from "./tools/update-sales-receipt.tool.js";
 import { DeleteSalesReceiptTool } from "./tools/delete-sales-receipt.tool.js";
 import { SearchSalesReceiptsTool } from "./tools/search-sales-receipts.tool.js";
 
+// Vendor Credit tools
+import { CreateVendorCreditTool } from "./tools/create-vendor-credit.tool.js";
+import { GetVendorCreditTool } from "./tools/get-vendor-credit.tool.js";
+import { UpdateVendorCreditTool } from "./tools/update-vendor-credit.tool.js";
+import { DeleteVendorCreditTool } from "./tools/delete-vendor-credit.tool.js";
+import { SearchVendorCreditsTool } from "./tools/search-vendor-credits.tool.js";
+
+// Credit Memo tools
+import { CreateCreditMemoTool } from "./tools/create-credit-memo.tool.js";
+import { GetCreditMemoTool } from "./tools/get-credit-memo.tool.js";
+import { UpdateCreditMemoTool } from "./tools/update-credit-memo.tool.js";
+import { DeleteCreditMemoTool } from "./tools/delete-credit-memo.tool.js";
+import { SearchCreditMemosTool } from "./tools/search-credit-memos.tool.js";
+
+// Attachable tools
+import { CreateAttachableTool } from "./tools/create-attachable.tool.js";
+import { GetAttachableTool } from "./tools/get-attachable.tool.js";
+import { UpdateAttachableTool } from "./tools/update-attachable.tool.js";
+import { DeleteAttachableTool } from "./tools/delete-attachable.tool.js";
+import { SearchAttachablesTool } from "./tools/search-attachables.tool.js";
+
+// Tax Agency tools
+import { CreateTaxAgencyTool } from "./tools/create-tax-agency.tool.js";
+import { GetTaxAgencyTool } from "./tools/get-tax-agency.tool.js";
+import { UpdateTaxAgencyTool } from "./tools/update-tax-agency.tool.js";
+
+// Tax Code tools
+import { GetTaxCodeTool } from "./tools/get-tax-code.tool.js";
+import { UpdateTaxCodeTool } from "./tools/update-tax-code.tool.js";
+import { SearchTaxCodesTool } from "./tools/search-tax-codes.tool.js";
+
+// Tax Rate tools
+import { GetTaxRateTool } from "./tools/get-tax-rate.tool.js";
+import { UpdateTaxRateTool } from "./tools/update-tax-rate.tool.js";
+import { SearchTaxRatesTool } from "./tools/search-tax-rates.tool.js";
+
+// PDF export tools
+import { GetInvoicePdfTool } from "./tools/get-invoice-pdf.tool.js";
+import { GetEstimatePdfTool } from "./tools/get-estimate-pdf.tool.js";
+import { GetCreditMemoPdfTool } from "./tools/get-credit-memo-pdf.tool.js";
+import { GetSalesReceiptPdfTool } from "./tools/get-sales-receipt-pdf.tool.js";
+
+// Report tools
+import { ReportBalanceSheetTool } from "./tools/report-balance-sheet.tool.js";
+import { ReportProfitAndLossTool } from "./tools/report-profit-and-loss.tool.js";
+import { ReportProfitAndLossDetailTool } from "./tools/report-profit-and-loss-detail.tool.js";
+import { ReportTrialBalanceTool } from "./tools/report-trial-balance.tool.js";
+import { ReportCashFlowTool } from "./tools/report-cash-flow.tool.js";
+import { ReportInventoryValuationSummaryTool } from "./tools/report-inventory-valuation-summary.tool.js";
+import { ReportCustomerSalesTool } from "./tools/report-customer-sales.tool.js";
+import { ReportItemSalesTool } from "./tools/report-item-sales.tool.js";
+import { ReportCustomerIncomeTool } from "./tools/report-customer-income.tool.js";
+import { ReportCustomerBalanceTool } from "./tools/report-customer-balance.tool.js";
+import { ReportCustomerBalanceDetailTool } from "./tools/report-customer-balance-detail.tool.js";
+import { ReportAgedReceivablesTool } from "./tools/report-aged-receivables.tool.js";
+import { ReportAgedReceivableDetailTool } from "./tools/report-aged-receivable-detail.tool.js";
+import { ReportVendorBalanceTool } from "./tools/report-vendor-balance.tool.js";
+import { ReportVendorBalanceDetailTool } from "./tools/report-vendor-balance-detail.tool.js";
+import { ReportAgedPayablesTool } from "./tools/report-aged-payables.tool.js";
+import { ReportAgedPayableDetailTool } from "./tools/report-aged-payable-detail.tool.js";
+import { ReportVendorExpensesTool } from "./tools/report-vendor-expenses.tool.js";
+import { ReportTransactionListTool } from "./tools/report-transaction-list.tool.js";
+import { ReportTransactionListWithSplitsTool } from "./tools/report-transaction-list-with-splits.tool.js";
+import { ReportTransactionListByCustomerTool } from "./tools/report-transaction-list-by-customer.tool.js";
+import { ReportTransactionListByVendorTool } from "./tools/report-transaction-list-by-vendor.tool.js";
+import { ReportGeneralLedgerDetailTool } from "./tools/report-general-ledger-detail.tool.js";
+import { ReportTaxSummaryTool } from "./tools/report-tax-summary.tool.js";
+import { ReportDepartmentSalesTool } from "./tools/report-department-sales.tool.js";
+import { ReportClassSalesTool } from "./tools/report-class-sales.tool.js";
+import { ReportAccountListDetailTool } from "./tools/report-account-list-detail.tool.js";
+import { ReportJournalReportTool } from "./tools/report-journal-report.tool.js";
+
 const main = async () => {
   // Create an MCP server
   const server = QuickbooksMCPServer.GetServer();
@@ -211,6 +283,78 @@ const main = async () => {
   RegisterTool(server, UpdateSalesReceiptTool);
   RegisterTool(server, DeleteSalesReceiptTool);
   RegisterTool(server, SearchSalesReceiptsTool);
+
+  // Add tools for vendor credits
+  RegisterTool(server, CreateVendorCreditTool);
+  RegisterTool(server, GetVendorCreditTool);
+  RegisterTool(server, UpdateVendorCreditTool);
+  RegisterTool(server, DeleteVendorCreditTool);
+  RegisterTool(server, SearchVendorCreditsTool);
+
+  // Add tools for credit memos
+  RegisterTool(server, CreateCreditMemoTool);
+  RegisterTool(server, GetCreditMemoTool);
+  RegisterTool(server, UpdateCreditMemoTool);
+  RegisterTool(server, DeleteCreditMemoTool);
+  RegisterTool(server, SearchCreditMemosTool);
+
+  // Add tools for attachables
+  RegisterTool(server, CreateAttachableTool);
+  RegisterTool(server, GetAttachableTool);
+  RegisterTool(server, UpdateAttachableTool);
+  RegisterTool(server, DeleteAttachableTool);
+  RegisterTool(server, SearchAttachablesTool);
+
+  // Add tools for tax agencies
+  RegisterTool(server, CreateTaxAgencyTool);
+  RegisterTool(server, GetTaxAgencyTool);
+  RegisterTool(server, UpdateTaxAgencyTool);
+
+  // Add tools for tax codes
+  RegisterTool(server, GetTaxCodeTool);
+  RegisterTool(server, UpdateTaxCodeTool);
+  RegisterTool(server, SearchTaxCodesTool);
+
+  // Add tools for tax rates
+  RegisterTool(server, GetTaxRateTool);
+  RegisterTool(server, UpdateTaxRateTool);
+  RegisterTool(server, SearchTaxRatesTool);
+
+  // Add tools for PDF exports
+  RegisterTool(server, GetInvoicePdfTool);
+  RegisterTool(server, GetEstimatePdfTool);
+  RegisterTool(server, GetCreditMemoPdfTool);
+  RegisterTool(server, GetSalesReceiptPdfTool);
+
+  // Add tools for reports
+  RegisterTool(server, ReportBalanceSheetTool);
+  RegisterTool(server, ReportProfitAndLossTool);
+  RegisterTool(server, ReportProfitAndLossDetailTool);
+  RegisterTool(server, ReportTrialBalanceTool);
+  RegisterTool(server, ReportCashFlowTool);
+  RegisterTool(server, ReportInventoryValuationSummaryTool);
+  RegisterTool(server, ReportCustomerSalesTool);
+  RegisterTool(server, ReportItemSalesTool);
+  RegisterTool(server, ReportCustomerIncomeTool);
+  RegisterTool(server, ReportCustomerBalanceTool);
+  RegisterTool(server, ReportCustomerBalanceDetailTool);
+  RegisterTool(server, ReportAgedReceivablesTool);
+  RegisterTool(server, ReportAgedReceivableDetailTool);
+  RegisterTool(server, ReportVendorBalanceTool);
+  RegisterTool(server, ReportVendorBalanceDetailTool);
+  RegisterTool(server, ReportAgedPayablesTool);
+  RegisterTool(server, ReportAgedPayableDetailTool);
+  RegisterTool(server, ReportVendorExpensesTool);
+  RegisterTool(server, ReportTransactionListTool);
+  RegisterTool(server, ReportTransactionListWithSplitsTool);
+  RegisterTool(server, ReportTransactionListByCustomerTool);
+  RegisterTool(server, ReportTransactionListByVendorTool);
+  RegisterTool(server, ReportGeneralLedgerDetailTool);
+  RegisterTool(server, ReportTaxSummaryTool);
+  RegisterTool(server, ReportDepartmentSalesTool);
+  RegisterTool(server, ReportClassSalesTool);
+  RegisterTool(server, ReportAccountListDetailTool);
+  RegisterTool(server, ReportJournalReportTool);
 
   // Start receiving messages on stdin and sending messages on stdout
   const transport = new StdioServerTransport();
