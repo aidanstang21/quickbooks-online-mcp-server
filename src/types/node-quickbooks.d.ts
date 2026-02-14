@@ -85,6 +85,34 @@ declare module 'node-quickbooks' {
     updatePurchase(purchaseData: object, callback: (err: any, purchase: any) => void): void;
     deletePurchase(idOrEntity: any, callback: (err: any, response: any) => void): void;
 
+    // Deposit CRUD
+    findDeposits(options: object, callback: (err: any, deposits: any) => void): void;
+    createDeposit(depositData: object, callback: (err: any, deposit: any) => void): void;
+    getDeposit(id: string, callback: (err: any, deposit: any) => void): void;
+    updateDeposit(depositData: object, callback: (err: any, deposit: any) => void): void;
+    deleteDeposit(idOrEntity: any, callback: (err: any, response: any) => void): void;
+
+    // Transfer CRUD
+    findTransfers(options: object, callback: (err: any, transfers: any) => void): void;
+    createTransfer(transferData: object, callback: (err: any, transfer: any) => void): void;
+    getTransfer(id: string, callback: (err: any, transfer: any) => void): void;
+    updateTransfer(transferData: object, callback: (err: any, transfer: any) => void): void;
+    deleteTransfer(idOrEntity: any, callback: (err: any, response: any) => void): void;
+
+    // Payment CRUD
+    findPayments(options: object, callback: (err: any, payments: any) => void): void;
+    createPayment(paymentData: object, callback: (err: any, payment: any) => void): void;
+    getPayment(id: string, callback: (err: any, payment: any) => void): void;
+    updatePayment(paymentData: object, callback: (err: any, payment: any) => void): void;
+    deletePayment(idOrEntity: any, callback: (err: any, response: any) => void): void;
+
+    // Sales Receipt CRUD
+    findSalesReceipts(options: object, callback: (err: any, salesReceipts: any) => void): void;
+    createSalesReceipt(salesReceiptData: object, callback: (err: any, salesReceipt: any) => void): void;
+    getSalesReceipt(id: string, callback: (err: any, salesReceipt: any) => void): void;
+    updateSalesReceipt(salesReceiptData: object, callback: (err: any, salesReceipt: any) => void): void;
+    deleteSalesReceipt(idOrEntity: any, callback: (err: any, response: any) => void): void;
+
     // You can add more methods as needed
   }
 }

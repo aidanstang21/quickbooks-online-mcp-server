@@ -66,6 +66,34 @@ import { UpdatePurchaseTool } from "./tools/update-purchase.tool.js";
 import { DeletePurchaseTool } from "./tools/delete-purchase.tool.js";
 import { SearchPurchasesTool } from "./tools/search-purchases.tool.js";
 
+// Deposit tools
+import { CreateDepositTool } from "./tools/create-deposit.tool.js";
+import { GetDepositTool } from "./tools/get-deposit.tool.js";
+import { UpdateDepositTool } from "./tools/update-deposit.tool.js";
+import { DeleteDepositTool } from "./tools/delete-deposit.tool.js";
+import { SearchDepositsTool } from "./tools/search-deposits.tool.js";
+
+// Transfer tools
+import { CreateTransferTool } from "./tools/create-transfer.tool.js";
+import { GetTransferTool } from "./tools/get-transfer.tool.js";
+import { UpdateTransferTool } from "./tools/update-transfer.tool.js";
+import { DeleteTransferTool } from "./tools/delete-transfer.tool.js";
+import { SearchTransfersTool } from "./tools/search-transfers.tool.js";
+
+// Payment tools
+import { CreatePaymentTool } from "./tools/create-payment.tool.js";
+import { GetPaymentTool } from "./tools/get-payment.tool.js";
+import { UpdatePaymentTool } from "./tools/update-payment.tool.js";
+import { DeletePaymentTool } from "./tools/delete-payment.tool.js";
+import { SearchPaymentsTool } from "./tools/search-payments.tool.js";
+
+// Sales Receipt tools
+import { CreateSalesReceiptTool } from "./tools/create-sales-receipt.tool.js";
+import { GetSalesReceiptTool } from "./tools/get-sales-receipt.tool.js";
+import { UpdateSalesReceiptTool } from "./tools/update-sales-receipt.tool.js";
+import { DeleteSalesReceiptTool } from "./tools/delete-sales-receipt.tool.js";
+import { SearchSalesReceiptsTool } from "./tools/search-sales-receipts.tool.js";
+
 const main = async () => {
   // Create an MCP server
   const server = QuickbooksMCPServer.GetServer();
@@ -155,6 +183,34 @@ const main = async () => {
   RegisterTool(server, UpdatePurchaseTool);
   RegisterTool(server, DeletePurchaseTool);
   RegisterTool(server, SearchPurchasesTool);
+
+  // Add tools for deposits
+  RegisterTool(server, CreateDepositTool);
+  RegisterTool(server, GetDepositTool);
+  RegisterTool(server, UpdateDepositTool);
+  RegisterTool(server, DeleteDepositTool);
+  RegisterTool(server, SearchDepositsTool);
+
+  // Add tools for transfers
+  RegisterTool(server, CreateTransferTool);
+  RegisterTool(server, GetTransferTool);
+  RegisterTool(server, UpdateTransferTool);
+  RegisterTool(server, DeleteTransferTool);
+  RegisterTool(server, SearchTransfersTool);
+
+  // Add tools for payments
+  RegisterTool(server, CreatePaymentTool);
+  RegisterTool(server, GetPaymentTool);
+  RegisterTool(server, UpdatePaymentTool);
+  RegisterTool(server, DeletePaymentTool);
+  RegisterTool(server, SearchPaymentsTool);
+
+  // Add tools for sales receipts
+  RegisterTool(server, CreateSalesReceiptTool);
+  RegisterTool(server, GetSalesReceiptTool);
+  RegisterTool(server, UpdateSalesReceiptTool);
+  RegisterTool(server, DeleteSalesReceiptTool);
+  RegisterTool(server, SearchSalesReceiptsTool);
 
   // Start receiving messages on stdin and sending messages on stdout
   const transport = new StdioServerTransport();
