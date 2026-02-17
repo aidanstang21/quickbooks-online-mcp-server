@@ -7,15 +7,42 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import open from 'open';
 
-dotenv.config();
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Env vars from Claude Code (.mcp.json) take priority.
+// Only fall back to .env if a key var is missing (e.g. running standalone).
+if (!process.env.QUICKBOOKS_CLIENT_ID) {
+  dotenv.config();
+}
+
 const client_id = process.env.QUICKBOOKS_CLIENT_ID;
 const client_secret = process.env.QUICKBOOKS_CLIENT_SECRET;
-const refresh_token = process.env.QUICKBOOKS_REFRESH_TOKEN;
-const realm_id = process.env.QUICKBOOKS_REALM_ID;
 const environment = process.env.QUICKBOOKS_ENVIRONMENT || 'sandbox';
-const redirect_uri = 'http://localhost:8000/callback';
+const redirect_uri = process.env.QUICKBOOKS_REDIRECTURI || 'http://localhost:8000/callback';
+
+// For tokens, read the freshest value from .mcp.json first (it gets updated
+// on every token rotation), then fall back to env vars / .env file.
+function readFreshestToken(): { refreshToken?: string; realmId?: string } {
+  const mcpPath = path.resolve('/workspace/work/.mcp.json');
+  try {
+    if (fs.existsSync(mcpPath)) {
+      const mcpConfig = JSON.parse(fs.readFileSync(mcpPath, 'utf-8'));
+      const qbEnv = mcpConfig?.mcpServers?.quickbooks?.env;
+      if (qbEnv) {
+        return {
+          refreshToken: qbEnv.QUICKBOOKS_REFRESH_TOKEN || process.env.QUICKBOOKS_REFRESH_TOKEN,
+          realmId: qbEnv.QUICKBOOKS_REALM_ID || process.env.QUICKBOOKS_REALM_ID,
+        };
+      }
+    }
+  } catch { /* fall through */ }
+  return {
+    refreshToken: process.env.QUICKBOOKS_REFRESH_TOKEN,
+    realmId: process.env.QUICKBOOKS_REALM_ID,
+  };
+}
+
+const { refreshToken: refresh_token, realmId: realm_id } = readFreshestToken();
 
 // Only throw error if client_id or client_secret is missing
 if (!client_id || !client_secret || !redirect_uri) {
@@ -76,7 +103,7 @@ class QuickbooksClient {
             // Save tokens
             this.refreshToken = tokens.refresh_token;
             this.realmId = tokens.realmId;
-            this.saveTokensToEnv();
+            this.saveTokens();
             
             // Send success response
             res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -152,27 +179,56 @@ class QuickbooksClient {
     });
   }
 
-  private saveTokensToEnv(): void {
-    const tokenPath = path.join(__dirname, '..', '..', '.env');
-    const envContent = fs.readFileSync(tokenPath, 'utf-8');
-    const envLines = envContent.split('\n');
-    
-    const updateEnvVar = (name: string, value: string) => {
-      const index = envLines.findIndex(line => line.startsWith(`${name}=`));
-      if (index !== -1) {
-        envLines[index] = `${name}=${value}`;
-      } else {
-        envLines.push(`${name}=${value}`);
+  private saveTokens(): void {
+    // Primary: update .mcp.json so Claude Code passes the fresh token on next restart
+    const mcpPaths = [
+      path.join(__dirname, '..', '..', '..', '.mcp.json'),   // /workspace/work/.mcp.json
+      path.resolve('/workspace/work/.mcp.json'),              // absolute fallback
+    ];
+
+    for (const mcpPath of mcpPaths) {
+      try {
+        if (!fs.existsSync(mcpPath)) continue;
+        const mcpConfig = JSON.parse(fs.readFileSync(mcpPath, 'utf-8'));
+        const qbEnv = mcpConfig?.mcpServers?.quickbooks?.env;
+        if (!qbEnv) continue;
+
+        if (this.refreshToken) qbEnv.QUICKBOOKS_REFRESH_TOKEN = this.refreshToken;
+        if (this.realmId) qbEnv.QUICKBOOKS_REALM_ID = this.realmId;
+
+        fs.writeFileSync(mcpPath, JSON.stringify(mcpConfig, null, 2) + '\n');
+        break; // written successfully, no need to try the fallback path
+      } catch (e) {
+        // continue to next path
       }
-    };
+    }
 
-    if (this.refreshToken) updateEnvVar('QUICKBOOKS_REFRESH_TOKEN', this.refreshToken);
-    if (this.realmId) updateEnvVar('QUICKBOOKS_REALM_ID', this.realmId);
+    // Secondary: also update .env for any direct-run / dev usage
+    try {
+      const envPath = path.join(__dirname, '..', '..', '.env');
+      if (fs.existsSync(envPath)) {
+        const envLines = fs.readFileSync(envPath, 'utf-8').split('\n');
 
-    fs.writeFileSync(tokenPath, envLines.join('\n'));
+        const updateEnvVar = (name: string, value: string) => {
+          const index = envLines.findIndex(line => line.startsWith(`${name}=`));
+          if (index !== -1) {
+            envLines[index] = `${name}=${value}`;
+          } else {
+            envLines.push(`${name}=${value}`);
+          }
+        };
+
+        if (this.refreshToken) updateEnvVar('QUICKBOOKS_REFRESH_TOKEN', this.refreshToken);
+        if (this.realmId) updateEnvVar('QUICKBOOKS_REALM_ID', this.realmId);
+
+        fs.writeFileSync(envPath, envLines.join('\n'));
+      }
+    } catch (e) {
+      // .env update is best-effort
+    }
   }
 
-  async refreshAccessToken() {
+  async refreshAccessToken(): Promise<{ access_token: string; expires_in: number }> {
     if (!this.refreshToken) {
       await this.startOAuthFlow();
       
@@ -185,18 +241,36 @@ class QuickbooksClient {
     try {
       // At this point we know refreshToken is not undefined
       const authResponse = await this.oauthClient.refreshUsingToken(this.refreshToken);
-      
+
       this.accessToken = authResponse.token.access_token;
-      
+
+      // Intuit rotates refresh tokens — persist the new one so it survives restarts
+      if (authResponse.token.refresh_token) {
+        this.refreshToken = authResponse.token.refresh_token;
+        this.saveTokens();
+      }
+
       // Calculate expiry time
       const expiresIn = authResponse.token.expires_in || 3600; // Default to 1 hour
       this.accessTokenExpiry = new Date(Date.now() + expiresIn * 1000);
-      
+
       return {
         access_token: this.accessToken,
         expires_in: expiresIn,
       };
     } catch (error: any) {
+      // If refresh token is expired/invalid, clear it and try full OAuth flow
+      const msg = error.message || '';
+      if (msg.includes('Token expired') || msg.includes('invalid_grant') || msg.includes('Token rejected')) {
+        console.error('Refresh token expired or invalid, starting OAuth flow...');
+        this.refreshToken = undefined;
+        await this.startOAuthFlow();
+        if (!this.refreshToken) {
+          throw new Error('Failed to obtain new refresh token from OAuth flow');
+        }
+        // Retry with the fresh token
+        return this.refreshAccessToken();
+      }
       throw new Error(`Failed to refresh Quickbooks token: ${error.message}`);
     }
   }
@@ -222,7 +296,7 @@ class QuickbooksClient {
     this.quickbooksInstance = new QuickBooks(
       this.clientId,
       this.clientSecret,
-      this.accessToken,
+      this.accessToken!,
       false, // no token secret for OAuth 2.0
       this.realmId!, // Safe to use ! here as we checked above
       this.environment === 'sandbox', // use the sandbox?
